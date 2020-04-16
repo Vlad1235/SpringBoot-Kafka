@@ -2,6 +2,7 @@ package com.learnkafka.controller;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +53,8 @@ public class LibraryEventControllerUnitTest {
 
     String json = objectMapper.writeValueAsString(libraryEvent);
 
-    doNothing().when(libraryEventProducer).sendLibraryEvent_approach3(isA(LibraryEvent.class)); // обучаем
+//    doNothing().when(libraryEventProducer).sendLibraryEvent_approach3(isA(LibraryEvent.class)); до тестирования на выпадения метода sendLibraryEvent_approach3 в ошибку onFailure в классе LibraryEventProducer
+    when(libraryEventProducer.sendLibraryEvent_approach3(isA(LibraryEvent.class))).thenReturn(null);
 
     // when
     mockMvc.perform(post("/v1/libraryevent")
@@ -84,7 +86,8 @@ public class LibraryEventControllerUnitTest {
         .build();
 
     String json = objectMapper.writeValueAsString(libraryEvent);
-    doNothing().when(libraryEventProducer).sendLibraryEvent_approach3(isA(LibraryEvent.class));
+//    doNothing().when(libraryEventProducer).sendLibraryEvent_approach3(isA(LibraryEvent.class));
+    when(libraryEventProducer.sendLibraryEvent_approach3(isA(LibraryEvent.class))).thenReturn(null);
 
     // expect
     String expectedErrorMessage = "book.bookAuthor - must not be blank, book.bookId - must not be null";
