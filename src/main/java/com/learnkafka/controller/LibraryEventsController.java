@@ -7,6 +7,7 @@ import com.learnkafka.domain.LibraryEvent;
 import com.learnkafka.domain.LibraryEventType;
 import com.learnkafka.producer.LibraryEventProducer;
 import java.util.concurrent.ExecutionException;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class LibraryEventsController {
 
 
   @PostMapping("/v1/libraryevent")
-  public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent libraryEvent)
+  public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Valid LibraryEvent libraryEvent)
       throws JsonProcessingException, ExecutionException, InterruptedException {
     // возвращаем kafka producer. Несколько способов
     log.info("Before sendLibraryEvent");
