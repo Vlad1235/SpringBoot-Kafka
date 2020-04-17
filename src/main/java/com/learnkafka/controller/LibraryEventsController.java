@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +41,16 @@ public class LibraryEventsController {
   }
 
 
-  // TODO:PUT
+
+  @PutMapping("/v1/libraryevent")
+  public ResponseEntity<?> putLibraryEvent(@RequestBody @Valid LibraryEvent libraryEvent)
+      throws JsonProcessingException {
+    if (libraryEvent.getLibraryEventId()==null){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the LibraryEventId");
+    }
+    libraryEvent.setLibraryEventType(UPDATE);
+    libraryEventProducer.sendLibraryEvent_approach3(libraryEvent); // асинхронный
+    return ResponseEntity.status(HttpStatus.OK).body(libraryEvent);
+  }
 
 }

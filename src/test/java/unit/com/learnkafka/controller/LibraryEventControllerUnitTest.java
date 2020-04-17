@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -98,4 +99,49 @@ public class LibraryEventControllerUnitTest {
         .andExpect(content().string(expectedErrorMessage));
   }
 
+  @Test
+  void putLibraryEvent() throws Exception {
+    // given
+    Book book = Book.builder()
+        .bookId(456)
+        .bookAuthor("Vlad")
+        .bookName("How to test of kafka")
+        .build();
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(123)
+        .book(book)
+        .build();
+    //when
+    String json = objectMapper.writeValueAsString(libraryEvent);
+    when(libraryEventProducer.sendLibraryEvent_approach3(isA(LibraryEvent.class))).thenReturn(null);
+    // expect
+    mockMvc.perform(put("/v1/libraryevent")
+        .content(json)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void putLibraryEvent_throw_BadRequest() throws Exception {
+    // given
+    Book book = Book.builder()
+        .bookId(456)
+        .bookAuthor("Vlad")
+        .bookName("How to test of kafka")
+        .build();
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(null)
+        .book(book)
+        .build();
+    //when
+    String json = objectMapper.writeValueAsString(libraryEvent);
+    when(libraryEventProducer.sendLibraryEvent_approach3(isA(LibraryEvent.class))).thenReturn(null);
+    // expect
+    String expect = "Please pass the LibraryEventId";
+    mockMvc.perform(put("/v1/libraryevent")
+        .content(json)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(expect));
+  }
 }

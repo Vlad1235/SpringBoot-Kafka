@@ -101,4 +101,42 @@ public class LibraryEventsControllerIntegrationTest {
     assertEquals(expectedKey,recievedKey);
     assertEquals(expectedValue,recievedValue); // проверяем что Consumer получит сообщение клиента (не путать с Producer)
   }
+
+
+  @Test
+  @Timeout(5)
+  void putLibraryEvent(){
+    //given
+    Book book = Book.builder()
+        .bookId(456)
+        .bookAuthor("Vlad")
+        .bookName("How to test of kafka")
+        .build();
+
+    LibraryEvent libraryEvent = LibraryEvent.builder()
+        .libraryEventId(123)
+        .book(book)
+        .build();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("content-type", MediaType.APPLICATION_JSON.toString());
+    HttpEntity<LibraryEvent> request = new HttpEntity<>(libraryEvent, headers);
+
+    //when
+    ResponseEntity<LibraryEvent> responseEntity = restTemplate
+        .exchange("/v1/libraryevent", HttpMethod.PUT, request, LibraryEvent.class);
+
+    //then
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+    ConsumerRecord<Integer, String> consumerRecord = KafkaTestUtils.getSingleRecord(consumer, "library-events");
+    Integer recievedKey = consumerRecord.key();
+    String recievedValue = consumerRecord.value();
+    Integer expectedKey = 123;
+    String expectedValue = "{\"libraryEventId\":123,\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"How to test of kafka\",\"bookAuthor\":\"Vlad\"}}";
+
+    assertEquals(expectedKey,recievedKey);
+    assertEquals(expectedValue,recievedValue);
+  }
+
 }
