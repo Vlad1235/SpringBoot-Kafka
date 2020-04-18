@@ -11,6 +11,9 @@ spring:
       bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer # так как libraryEventId типа Integer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer # payload, который посылается это Book, то есть будет сериализован в String
+      properties: # override default config values
+        acks: all
+        retries: 10
     admin: # AdminKafka класс, для создания topic
       properties:
         bootstrap.servers: localhost:9092,localhost:9093,localhost:9094
